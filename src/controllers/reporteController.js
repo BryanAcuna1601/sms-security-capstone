@@ -1,9 +1,19 @@
 const Reporte = require('../models/Reporte');
+const { inferirCategoriaYEmpresa } = require('../services/inferenciaService');
 
 // Crear un nuevo reporte
 const crearReporte = async (req, res) => {
   try {
-    const nuevoReporte = new Reporte(req.body);
+    const datos = { ...req.body };
+
+    // Si no vienen categoria o empresa_mencionada, se infieren automáticamente
+    if (!datos.categoria || !datos.empresa_mencionada) {
+      const inferido = inferirCategoriaYEmpresa(datos.mensaje);
+      datos.categoria = datos.categoria || inferido.categoria;
+      datos.empresa_mencionada = datos.empresa_mencionada || inferido.empresa_mencionada;
+    }
+    
+    const nuevoReporte = new Reporte(datos);
     const reporteGuardado = await nuevoReporte.save();
     res.status(201).json(reporteGuardado);
   } catch (error) {
