@@ -1,7 +1,7 @@
 const empresasConocidas = {
   encomiendas: {
     'Correos de Chile': ['correos chile', 'correoschile', 'corre0schile', 'correos'],
-    'Chilexpress': ['chilexpress'],
+    'Chilexpress': ['chilexpress', 'chile express'],
     'Blue Express': ['blue express', 'blueexpress'],
     'Starken': ['starken']
   },
