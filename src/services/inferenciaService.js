@@ -47,7 +47,6 @@ function inferirCategoriaYEmpresa(mensaje) {
     return { categoria: 'sin_clasificar', empresa_mencionada: 'sin_identificar' };
   }
 
-  // Normalizar el texto: minúsculas y eliminación de tildes/acentos
   const texto = mensaje
     .toLowerCase()
     .normalize('NFD')

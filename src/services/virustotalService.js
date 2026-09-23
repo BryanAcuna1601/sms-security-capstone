@@ -4,7 +4,6 @@ const { desacortarUrl } = require('./desacortadorService');
 const VT_API_KEY = process.env.VIRUSTOTAL_API_KEY;
 const VT_BASE_URL = 'https://www.virustotal.com/api/v3';
 
-// VirusTotal requiere la URL codificada en base64 (sin "=" al final) para consultarla
 function codificarUrl(url) {
   return Buffer.from(url).toString('base64').replace(/=+$/, '');
 }
