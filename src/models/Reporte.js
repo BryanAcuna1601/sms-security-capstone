@@ -19,6 +19,7 @@ const reporteSchema = new mongoose.Schema({
   },
   categoria: {
     type: String,
+    enum: ['banca', 'encomiendas', 'gobierno', 'retail', 'telecomunicaciones', 'peajes', 'otros', 'sin_clasificar'],
     default: 'sin_clasificar'
   },
   estado: {
