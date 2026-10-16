@@ -8,6 +8,15 @@ async function intentarGet(url) {
   });
 }
 
+// Extrae solo el dominio (sin protocolo, sin www, sin ruta) para comparar
+function extraerHostname(url) {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
+
 async function desacortarUrl(url) {
   const tieneProtocolo = /^https?:\/\//i.test(url);
   const candidatos = tieneProtocolo ? [url] : [`https://${url}`, `http://${url}`];
@@ -17,10 +26,12 @@ async function desacortarUrl(url) {
       const response = await intentarGet(candidato);
       const urlFinal = response.request.res.responseUrl || candidato;
 
+      const fueAcortada = extraerHostname(urlFinal) !== extraerHostname(candidato);
+
       return {
         url_original: url,
         url_final: urlFinal,
-        fue_acortada: urlFinal !== candidato
+        fue_acortada: fueAcortada
       };
     } catch (error) {
       continue;
