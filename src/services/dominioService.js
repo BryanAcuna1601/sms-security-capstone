@@ -50,7 +50,6 @@ function consultarWhoisCL(dominio) {
   });
 }
 
-// El proposito de esta función es poder elegir entre RDAP o WHOIS (dependiendo del dominio)
 async function consultarAntiguedadDominio(url) {
   const dominio = extraerDominio(url);
   if (!dominio) return { dominio: null, dias_antiguedad: null, encontrado: false };
@@ -62,4 +61,4 @@ async function consultarAntiguedadDominio(url) {
   return { dominio, ...resultado };
 }
 
-module.exports = { consultarAntiguedadDominio };
+module.exports = { consultarAntiguedadDominio, extraerDominio };

@@ -1,16 +1,18 @@
 const Reporte = require('../models/Reporte');
 const { inferirCategoriaYEmpresa } = require('../services/inferenciaService');
-const { analizarUrl } = require('../services/virustotalService');
-const { consultarAntiguedadDominio } = require('../services/dominioService');
+const { desacortarUrl } = require('../services/desacortadorService');
+const { consultarUrl } = require('../services/virustotalService');
+const { consultarAntiguedadDominio, extraerDominio } = require('../services/dominioService');
 const { calcularScoreRiesgo } = require('../services/scoringService');
 const { extraerUrlDelMensaje } = require('../utils/extraerUrl');
+const { buscarEnCache, guardarEnCache } = require('../services/cacheDominioService');
 
 const crearReporte = async (req, res) => {
   try {
     const datos = { ...req.body };
 
     const guardar = datos.guardar !== false;
-    delete datos.guardar; 
+    delete datos.guardar;
 
     const inferido = inferirCategoriaYEmpresa(datos.mensaje);
     datos.categoria = datos.categoria || inferido.categoria;
@@ -24,8 +26,24 @@ const crearReporte = async (req, res) => {
     let resultadoDominio = null;
 
     if (url) {
-      resultadoVirusTotal = await analizarUrl(url);
-      resultadoDominio = await consultarAntiguedadDominio(resultadoVirusTotal.url_final);
+      const { url_final, fue_acortada } = await desacortarUrl(url);
+      const dominio = extraerDominio(url_final);
+
+      const enCache = await buscarEnCache(dominio);
+
+      if (enCache) {
+        console.log(`Cache HIT para el dominio: ${dominio}`);
+        resultadoVirusTotal = { ...enCache.resultado_virustotal, url_final, fue_acortada };
+        resultadoDominio = { dominio, dias_antiguedad: enCache.dias_antiguedad };
+      } else {
+        console.log(`Cache MISS para el dominio: ${dominio}, consultando APIs externas`);
+        const vt = await consultarUrl(url_final);
+        resultadoVirusTotal = { ...vt, url_final, fue_acortada };
+        resultadoDominio = await consultarAntiguedadDominio(url_final);
+
+        await guardarEnCache(dominio, vt, resultadoDominio.dias_antiguedad);
+      }
+
       datos.url = url;
     }
 
@@ -43,27 +61,18 @@ const crearReporte = async (req, res) => {
     };
 
     if (!guardar) {
-      return res.status(200).json({
-        ...datos,
-        detalles_analisis: detalles,
-        guardado: false
-      });
+      return res.status(200).json({ ...datos, detalles_analisis: detalles, guardado: false });
     }
 
     const nuevoReporte = new Reporte(datos);
     const reporteGuardado = await nuevoReporte.save();
 
-    res.status(201).json({
-      ...reporteGuardado.toObject(),
-      detalles_analisis: detalles,
-      guardado: true
-    });
+    res.status(201).json({ ...reporteGuardado.toObject(), detalles_analisis: detalles, guardado: true });
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// Obtener todos los reportes
 const obtenerReportes = async (req, res) => {
   try {
     const reportes = await Reporte.find();
@@ -73,7 +82,6 @@ const obtenerReportes = async (req, res) => {
   }
 };
 
-// Actualizar un reporte
 const actualizarReporte = async (req, res) => {
   try {
     const reporteActualizado = await Reporte.findByIdAndUpdate(
@@ -90,7 +98,6 @@ const actualizarReporte = async (req, res) => {
   }
 };
 
-// Eliminar un reporte
 const eliminarReporte = async (req, res) => {
   try {
     const reporteEliminado = await Reporte.findByIdAndDelete(req.params.id);
