@@ -117,6 +117,8 @@ Si no se envía `categoria`/`empresa_mencionada`, se infieren automáticamente d
 }
 ```
 
+**Compartir el reporte es opcional:** si se envía `"guardar": false` en el body, el backend igual realiza el análisis completo y lo devuelve en la respuesta (status 200), pero no lo persiste en la base de datos. Si no se envía ese campo, o se envía `true`, el comportamiento es el de siempre (status 201, se guarda).
+
 **Ejemplo sin URL en el mensaje** (el score solo puede subir por coincidencia con el dataset, máximo 30 puntos):
 ```json
 {
@@ -159,9 +161,10 @@ Implementado y probado:
 - CRUD completo de reportes.
 - Flujo completo de análisis en `POST /api/reportes` (extracción de URL, desacortado, VirusTotal, antigüedad de dominio, scoring).
 - Inferencia de categoría/empresa mencionada por reglas.
+- Opción de analizar un mensaje sin guardarlo (`"guardar": false`), para que el usuario decida si comparte su reporte.
+- Caché de dominios (patrón Cache-Aside, colección `CacheDominio`, TTL 24h) para reducir consultas a VirusTotal y WHOIS/RDAP.
 
 Pendiente (no implementado aún):
-- Caché de dominios (patrón Cache-Aside, TTL 24h) para no exceder el límite gratuito de VirusTotal.
 - Cálculo del campo `nivel_riesgo` como texto.
 - Autenticación por teléfono (OTP).
 - Despliegue en Render.
