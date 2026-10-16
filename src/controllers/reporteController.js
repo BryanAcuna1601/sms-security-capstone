@@ -5,19 +5,19 @@ const { consultarAntiguedadDominio } = require('../services/dominioService');
 const { calcularScoreRiesgo } = require('../services/scoringService');
 const { extraerUrlDelMensaje } = require('../utils/extraerUrl');
 
-// Crear un nuevo reporte
 const crearReporte = async (req, res) => {
   try {
     const datos = { ...req.body };
 
-    // Inferencia de categoría y empresa si no vienen en el body
+    const guardar = datos.guardar !== false;
+    delete datos.guardar; 
+
     const inferido = inferirCategoriaYEmpresa(datos.mensaje);
     datos.categoria = datos.categoria || inferido.categoria;
     datos.empresa_mencionada = datos.empresa_mencionada || inferido.empresa_mencionada;
 
     const coincideConDataset = inferido.categoria !== 'sin_clasificar';
 
-    // Si no vino "url" explícita, intentamos extraerla del mensaje
     const url = datos.url || extraerUrlDelMensaje(datos.mensaje);
 
     let resultadoVirusTotal = null;
@@ -42,12 +42,21 @@ const crearReporte = async (req, res) => {
       coincide_patron_dataset: coincideConDataset
     };
 
+    if (!guardar) {
+      return res.status(200).json({
+        ...datos,
+        detalles_analisis: detalles,
+        guardado: false
+      });
+    }
+
     const nuevoReporte = new Reporte(datos);
     const reporteGuardado = await nuevoReporte.save();
 
     res.status(201).json({
       ...reporteGuardado.toObject(),
-      detalles_analisis: detalles
+      detalles_analisis: detalles,
+      guardado: true
     });
   } catch (error) {
     res.status(400).json({ error: error.message });
