@@ -8,7 +8,6 @@ async function intentarGet(url) {
   });
 }
 
-// Extrae solo el dominio (sin protocolo, sin www, sin ruta) para comparar
 function extraerHostname(url) {
   try {
     return new URL(url).hostname.replace(/^www\./, '');

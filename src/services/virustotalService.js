@@ -8,7 +8,6 @@ function codificarUrl(url) {
   return Buffer.from(url).toString('base64').replace(/=+$/, '');
 }
 
-// Consulta el análisis de una URL específica en VirusTotal
 async function consultarUrl(url) {
   try {
     const urlId = codificarUrl(url);
@@ -26,7 +25,6 @@ async function consultarUrl(url) {
       encontrado: true
     };
   } catch (error) {
-    // Si la URL nunca fue analizada antes, VirusTotal devuelve 404
     if (error.response && error.response.status === 404) {
       return { maliciosos: 0, sospechosos: 0, inofensivos: 0, encontrado: false };
     }
@@ -35,7 +33,6 @@ async function consultarUrl(url) {
   }
 }
 
-// Función principal: desacorta la URL (si aplica) y luego la analiza en VirusTotal
 async function analizarUrl(urlOriginal) {
   const { url_final, fue_acortada } = await desacortarUrl(urlOriginal);
 

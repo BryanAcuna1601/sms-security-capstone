@@ -47,13 +47,14 @@ const crearReporte = async (req, res) => {
       datos.url = url;
     }
 
-    const { score_riesgo, detalles } = calcularScoreRiesgo({
+    const { score_riesgo, nivel_riesgo, detalles } = calcularScoreRiesgo({
       coincideConDataset,
       resultadoVirusTotal,
       resultadoDominio
     });
 
     datos.score_riesgo = score_riesgo;
+    datos.nivel_riesgo = nivel_riesgo;
     datos.analisis = {
       virustotal_maliciosos: resultadoVirusTotal ? resultadoVirusTotal.maliciosos : null,
       dominio_dias_antiguedad: resultadoDominio ? resultadoDominio.dias_antiguedad : null,

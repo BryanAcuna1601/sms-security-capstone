@@ -31,6 +31,11 @@ const reporteSchema = new mongoose.Schema({
     type: Number,
     default: null
   },
+  nivel_riesgo: {
+  type: String,
+  enum: ['bajo', 'medio', 'alto', null],
+  default: null
+  },
   analisis: {
     virustotal_maliciosos: { type: Number, default: null },
     dominio_dias_antiguedad: { type: Number, default: null },

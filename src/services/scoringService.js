@@ -1,4 +1,9 @@
-// Calcula el score de riesgo (0-100) combinando las señales de los distintos servicios
+function calcularNivelRiesgo(score) {
+  if (score < 40) return 'bajo';
+  if (score < 70) return 'medio';
+  return 'alto';
+}
+
 function calcularScoreRiesgo({ coincideConDataset, resultadoVirusTotal, resultadoDominio }) {
   let score = 0;
   const detalles = [];
@@ -33,10 +38,13 @@ function calcularScoreRiesgo({ coincideConDataset, resultadoVirusTotal, resultad
     detalles.push('El enlace estaba acortado, técnica común en smishing (+5)');
   }
 
+  const scoreFinal = Math.min(score, 100);
+
   return {
-    score_riesgo: Math.min(score, 100),
+    score_riesgo: scoreFinal,
+    nivel_riesgo: calcularNivelRiesgo(scoreFinal),
     detalles
   };
 }
 
-module.exports = { calcularScoreRiesgo };
+module.exports = { calcularScoreRiesgo, calcularNivelRiesgo };
