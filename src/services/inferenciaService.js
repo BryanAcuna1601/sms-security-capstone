@@ -42,6 +42,10 @@ const empresasConocidas = {
   }
 };
 
+function escaparRegex(texto) {
+  return texto.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 function inferirCategoriaYEmpresa(mensaje) {
   if (!mensaje || typeof mensaje !== 'string') {
     return { categoria: 'sin_clasificar', empresa_mencionada: 'sin_identificar' };
@@ -55,7 +59,8 @@ function inferirCategoriaYEmpresa(mensaje) {
   for (const [categoria, empresas] of Object.entries(empresasConocidas)) {
     for (const [empresaCanonica, aliasList] of Object.entries(empresas)) {
       for (const alias of aliasList) {
-        if (texto.includes(alias)) {
+        const regex = new RegExp(`\\b${escaparRegex(alias)}\\b`, 'i');
+        if (regex.test(texto)) {
           return {
             categoria: categoria,
             empresa_mencionada: empresaCanonica
