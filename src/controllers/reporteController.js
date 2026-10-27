@@ -65,6 +65,10 @@ const crearReporte = async (req, res) => {
       return res.status(200).json({ ...datos, detalles_analisis: detalles, guardado: false });
     }
 
+    if (req.usuario) {
+    datos.reportado_por = req.usuario.id;
+    }
+
     const nuevoReporte = new Reporte(datos);
     const reporteGuardado = await nuevoReporte.save();
 
