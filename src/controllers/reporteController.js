@@ -92,7 +92,7 @@ const actualizarReporte = async (req, res) => {
     const reporteActualizado = await Reporte.findByIdAndUpdate(
       req.params.id,
       req.body,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
     if (!reporteActualizado) {
       return res.status(404).json({ error: 'Reporte no encontrado' });
