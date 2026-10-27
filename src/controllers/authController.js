@@ -40,8 +40,7 @@ const confirmarOtp = async (req, res) => {
 
     const token = jwt.sign(
       { id: usuario._id, telefono: usuario.telefono, rol: usuario.rol },
-      process.env.JWT_SECRET,
-      { expiresIn: '30d' }
+      process.env.JWT_SECRET
     );
 
     res.status(200).json({ token, usuario });
