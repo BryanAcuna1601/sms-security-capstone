@@ -1,4 +1,5 @@
 const Reporte = require('../models/Reporte');
+const HistorialAnalisis = require('../models/HistorialAnalisis');
 const { inferirCategoriaYEmpresa } = require('../services/inferenciaService');
 const { desacortarUrl } = require('../services/desacortadorService');
 const { consultarUrl } = require('../services/virustotalService');
@@ -61,12 +62,25 @@ const crearReporte = async (req, res) => {
       coincide_patron_dataset: coincideConDataset
     };
 
+    if (req.usuario) {
+      await HistorialAnalisis.create({
+        usuario: req.usuario.id,
+        mensaje: datos.mensaje,
+        categoria: datos.categoria,
+        empresa_mencionada: datos.empresa_mencionada,
+        url: datos.url || '',
+        score_riesgo: datos.score_riesgo,
+        nivel_riesgo: datos.nivel_riesgo,
+        fue_reportado: guardar
+      });
+    }
+
     if (!guardar) {
       return res.status(200).json({ ...datos, detalles_analisis: detalles, guardado: false });
     }
 
     if (req.usuario) {
-    datos.reportado_por = req.usuario.id;
+      datos.reportado_por = req.usuario.id;
     }
 
     const nuevoReporte = new Reporte(datos);
