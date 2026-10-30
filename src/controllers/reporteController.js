@@ -63,16 +63,20 @@ const crearReporte = async (req, res) => {
     };
 
     if (req.usuario) {
-      await HistorialAnalisis.create({
-        usuario: req.usuario.id,
-        mensaje: datos.mensaje,
-        categoria: datos.categoria,
-        empresa_mencionada: datos.empresa_mencionada,
-        url: datos.url || '',
-        score_riesgo: datos.score_riesgo,
-        nivel_riesgo: datos.nivel_riesgo,
-        fue_reportado: guardar
-      });
+      await HistorialAnalisis.findOneAndUpdate(
+        { usuario: req.usuario.id, mensaje: datos.mensaje },
+        {
+          $set: {
+            categoria: datos.categoria,
+            empresa_mencionada: datos.empresa_mencionada,
+            url: datos.url || '',
+            score_riesgo: datos.score_riesgo,
+            nivel_riesgo: datos.nivel_riesgo,
+            fue_reportado: guardar
+          }
+        },
+        { upsert: true, setDefaultsOnInsert: true }
+      );
     }
 
     if (!guardar) {
