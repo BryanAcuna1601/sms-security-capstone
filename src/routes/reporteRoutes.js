@@ -4,7 +4,7 @@ const { crearReporte, obtenerReportes, actualizarReporte, eliminarReporte } = re
 const { verificarTokenOpcional } = require('../middleware/authOpcional');
 const { verificarToken, requiereAdmin } = require('../middleware/auth');
 
-router.post('/', verificarTokenOpcional, crearReporte);
+router.post('/', verificarToken, crearReporte);
 router.get('/', obtenerReportes);
 router.patch('/:id', verificarToken, requiereAdmin, actualizarReporte);
 router.delete('/:id', verificarToken, requiereAdmin, eliminarReporte);
