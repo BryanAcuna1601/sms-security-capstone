@@ -59,12 +59,13 @@ Al estar en el plan gratuito, el servicio se "duerme" tras 15 minutos de inactiv
 
 3. Crear un archivo `.env` en la raíz con las siguientes variables:
 
+```
 PORT=3000
 MONGODB_URI=<tu cadena de conexión de MongoDB Atlas>
 VIRUSTOTAL_API_KEY=<tu api key de VirusTotal>
 JWT_SECRET=<cualquier string secreto, usado para firmar los tokens>
 GEMINI_API_KEY=<tu api key de Google Gemini>
-
+```
 
 4. Ejecutar en modo desarrollo:
 ```bash
