@@ -6,7 +6,6 @@ const reporteRoutes = require('./routes/reporteRoutes');
 const authRoutes = require('./routes/authRoutes');
 const historialRoutes = require('./routes/historialRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
-// 1. Importas la nueva ruta del asistente IA
 const asistenteRoutes = require("./routes/asistenteRoutes");
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +16,6 @@ app.use('/api/reportes', reporteRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/usuarios', usuarioRoutes);
-// 2. Registras el endpoint para que reciba las consultas
 app.use('/api/asistente', asistenteRoutes);
 
 mongoose.connect(process.env.MONGODB_URI)

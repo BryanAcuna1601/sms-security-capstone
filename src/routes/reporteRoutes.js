@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { crearReporte, obtenerReportes, actualizarReporte, eliminarReporte } = require('../controllers/reporteController');
-const { verificarTokenOpcional } = require('../middleware/authOpcional');
 const { verificarToken, requiereAdmin } = require('../middleware/auth');
 
 router.post('/', verificarToken, crearReporte);
